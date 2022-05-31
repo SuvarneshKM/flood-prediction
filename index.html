@@ -70,46 +70,43 @@
     <div id="map"></div>
   </div>
   <script>
-    // let dist = {
-    //   Kasaragod: 0,
-    //   Kannur: 0,
-    //   Wayanad: 0,
-    //   Kozhikode: 0,
-    //   Malappuram: 0,
-    //   Palakkad: 0,
-    //   Thrissur: 0,
-    //   Ernakulam: 0,
-    //   Idukki: 0,
-    //   Kottayam: 0,
-    //   Alappuzha: 0,
-    //   Pathanamthitta: 0,
-    //   Kollam: 0,
-    //   Thiruvananthapuram: 1
-    // }
-    fetch('https://raw.githubusercontent.com/SuvarneshKM/lfh-web/main/test.json')
-      .then(response => response.json())
-      .then(json => console.log(json))
 
-    var demo = {
-      "1": 0,
-      "2": 0,
-      "3": 0,
-      "4": 0,
-      "5": 0,
-      "6": 0,
-      "7": 0,
-      "8": 0,
-      "9": 0,
-      "10": 0,
-      "11": 0,
-      "12": 0,
-      "13": 0,
-      "14": 1,
+    async function getUsers() {
+      let url = 'https://raw.githubusercontent.com/SuvarneshKM/lfh-web/main/test.json';
+      try {
+        let res = await fetch(url);
+        return await res.json();
+      } catch (error) {
+        console.log(error);
+      }
     }
-    // https://jsonkeeper.com/b/VKJV
 
 
-    var result = Object.keys(demo).map((key) => demo[key]);
+    var don = getUsers()
+    don.then(data => {
+      console.log(data)
+      var donk = data;
+      var result = Object.keys(data).map((key) => data[key]);
+      map.on('click', 'states-layer', function (e) {
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(
+            result[e.features[0].properties.DT_CEN_CD - 1] ?
+              "<p>District Name : " +
+              e.features[0].properties.DISTRICT +
+              "</br>" +
+              "Flood : YES"
+              :
+              "<p>District Name : " +
+              e.features[0].properties.DISTRICT +
+              "</br>" +
+              "Flood : NO"
+          )
+          .addTo(map);
+      });
+
+    })
+
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoic3V2YXJuZXNoIiwiYSI6ImNrbW00NmtrZDA0MmQydnBldjgwcjA1OHYifQ.uAboQzYKdlVuxw69EkJoTg';
     const map = new mapboxgl.Map({
@@ -146,23 +143,6 @@
       });
       console.log(checklist(1)) //run the function
 
-      map.on('click', 'states-layer', function (e) {
-        new mapboxgl.Popup()
-          .setLngLat(e.lngLat)
-          .setHTML(
-            result[e.features[0].properties.DT_CEN_CD - 1] ?
-              "<p>District Name : " +
-              e.features[0].properties.DISTRICT +
-              "</br>" +
-              "Flood : YES"
-              :
-              "<p>District Name : " +
-              e.features[0].properties.DISTRICT +
-              "</br>" +
-              "Flood : NO"
-          )
-          .addTo(map);
-      });
     });
 
     function flood(d) {
